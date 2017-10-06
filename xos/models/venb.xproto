@@ -1,0 +1,10 @@
+option name = "vENB";
+option app_label = "venb";
+
+message VENBService (Service){
+    option verbose_name = "Virtual eNodeB Service";
+}
+
+message VENBServiceInstance (TenantWithContainer){
+    option verbose_name = "Virtual eNodeB Service Instance";
+}
