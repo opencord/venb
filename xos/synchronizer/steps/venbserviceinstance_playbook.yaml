@@ -21,13 +21,10 @@
   vars:
     - ts_ip: {{ flat_ip }}
     - ts_mask: "255.255.255.0"
-    - ts_gateway: "103.0.0.1"
+    - ts_gateway: "103.0.0.254"
     - ts_host_name: "spirent_ts"
-
-    # wait for static IP
-    - tas_ip: ""
-
-    - ntp_ip: "192.168.0.201"
+    - tas_ip: "103.0.0.100"
+    - ntp_ip: "192.168.0.222"
   roles:
     - ts_config
 
