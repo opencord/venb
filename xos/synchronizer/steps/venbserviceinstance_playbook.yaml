@@ -24,7 +24,7 @@
     - ts_gateway: "103.0.0.254"
     - ts_host_name: "spirent_ts"
     - tas_ip: "103.0.0.100"
-    - ntp_ip: "192.168.0.222"
+    - ntp_ip: "193.0.0.222"
   roles:
     - ts_config
 
