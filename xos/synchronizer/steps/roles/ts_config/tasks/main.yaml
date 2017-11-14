@@ -13,6 +13,11 @@
 # limitations under the License.
 
 ---
+# Should be in the data model, not hardcoded here...
+- name: Set SSH password
+  set_fact:
+    ansible_ssh_pass: cfguser
+
 - name: check flat_network interface
   shell: ifconfig | grep -B1 "inet addr:{{ ts_ip }}" | awk '$1!="inet" && $1!="--" {print $1}'
   args:
@@ -33,11 +38,30 @@
       Do you wish to Continue: "yes"
       Designate management port: "{{ iface.stdout_lines }}"
       IP Address: "{{ ts_ip }}"
-      Network Mask: "{{ ts_ip_mask }}"
+      Network Mask: "{{ ts_mask }}"
       Auto Negotiate: "yes"
-      IP Gateway: "{{ ts_gw }}"
+      IP Gateway: "{{ ts_gateway }}"
       Host Name: "{{ ts_host_name }}"
       TAS IP Address: "{{ tas_ip }}"
       NTP Server IP: "{{ ntp_ip }}"
-      System must be rebooted: "yes"
+      System must be rebooted: "no"
     echo: yes
+
+- name: Re-add network interfaces to configuration
+  sudo: yes
+  notify: reboot node
+  blockinfile:
+    dest: /etc/network/interfaces
+    block: |
+      auto eth1
+      iface eth1 inet dhcp
+      auto eth2
+      iface eth2 inet dhcp
+      auto eth3
+      iface eth3 inet dhcp
+      auto eth4
+      iface eth4 inet dhcp
+      auto eth5
+      iface eth5 inet dhcp
+      auto eth6
+      iface eth6 inet dhcp
