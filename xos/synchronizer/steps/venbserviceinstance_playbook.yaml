@@ -22,8 +22,8 @@
     - ts_mask: "255.255.255.0"
     - ts_gateway: "103.0.0.254"
     - ts_host_name: "{{ instance_name }}"
-    - tas_ip: "103.0.0.100"
-    - ntp_ip: "193.0.0.222"
+    - tas_ip: "{{ tas_ip }}"
+    - ntp_ip: "{{ ntp_ip }}"
     - password: "{{ login_password }}"
   roles:
     - ts_config

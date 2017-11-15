@@ -53,6 +53,8 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
         service = self.get_service(o)
         fields['login_user'] = service.login_user
         fields['login_password'] = service.login_password
+        fields['tas_ip'] = service.tas_ip
+        fields['ntp_ip'] = service.ntp_ip
         return fields
 
     def get_ip_address(self, network_name, service_instance, parameter):
