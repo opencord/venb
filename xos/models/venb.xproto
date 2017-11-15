@@ -3,6 +3,8 @@ option app_label = "venb";
 
 message VENBService (Service){
     option verbose_name = "Virtual eNodeB Service";
+    required string login_user = 1 [help_text = "vENB VM login user", default = "cfguser", max_length = 32, content_type = "stripped", null = False, db_index = False, blank = False];
+    required string login_password = 2 [help_text = "vENB VM login password", default = "cfguser", max_length = 32, content_type = "stripped", null = False, db_index = False, blank = False];
 }
 
 message VENBServiceInstance (TenantWithContainer){

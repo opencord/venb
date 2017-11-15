@@ -16,7 +16,7 @@
 - hosts: {{ instance_name }}
   gather_facts: False
   connection: ssh
-  user: cfguser
+  user: {{ login_user }}
   vars:
     - ts_ip: {{ flat_ip }}
     - ts_mask: "255.255.255.0"
@@ -24,6 +24,7 @@
     - ts_host_name: "{{ instance_name }}"
     - tas_ip: "103.0.0.100"
     - ntp_ip: "193.0.0.222"
+    - password: "{{ login_password }}"
   roles:
     - ts_config
 
