@@ -35,11 +35,24 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
     def __init__(self, *args, **kwargs):
         super(SyncVENBServiceInstance, self).__init__(*args, **kwargs)
 
+    def get_service(self, o):
+        if not o.owner:
+            return None
+
+        service = VENBService.objects.filter(id=o.owner.id)
+
+        if not service:
+            return None
+
+        return service[0]
+
     def get_extra_attributes(self, o):
 
         fields = {}
         fields['flat_ip'] = self.get_ip_address('flat_network', VENBServiceInstance, 'get_venb_flat_ip')
-
+        service = self.get_service(o)
+        fields['login_user'] = service.login_user
+        fields['login_password'] = service.login_password
         return fields
 
     def get_ip_address(self, network_name, service_instance, parameter):

@@ -13,10 +13,9 @@
 # limitations under the License.
 
 ---
-# Should be in the data model, not hardcoded here...
 - name: Set SSH password
   set_fact:
-    ansible_ssh_pass: cfguser
+    ansible_ssh_pass: "{{ password }}"
 
 - name: check flat_network interface
   shell: ifconfig | grep -B1 "inet addr:{{ ts_ip }}" | awk '$1!="inet" && $1!="--" {print $1}'
