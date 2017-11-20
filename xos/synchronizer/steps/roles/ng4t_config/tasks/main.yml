@@ -13,19 +13,9 @@
 # limitations under the License.
 
 ---
-- hosts: {{ instance_name }}
-  gather_facts: False
-  connection: ssh
-  user: {{ login_user }}
-  # These are still the old variables; update for ng4T emulator
-  vars:
-    - ts_ip: {{ flat_ip }}
-    - ts_mask: "255.255.255.0"
-    - ts_gateway: "103.0.0.254"
-    - ts_host_name: "{{ instance_name }}"
-    - tas_ip: "{{ tas_ip }}"
-    - ntp_ip: "{{ ntp_ip }}"
-    - password: "{{ login_password }}"
-  roles:
-    - ng4t_config
-
+- name: Copy license file
+  copy:
+    src: "{{ ng4t_license_src }}"
+    dest: "{{ ng4t_license_dest }}"
+    owner: root
+    mode: 0644
