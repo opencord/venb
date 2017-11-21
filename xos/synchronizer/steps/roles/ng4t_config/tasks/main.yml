@@ -13,9 +13,43 @@
 # limitations under the License.
 
 ---
+- name: Set SSH password
+  set_fact:
+    ansible_ssh_pass: "{{ password }}"
+
+- name: check s11_network interface
+  shell: ifconfig | grep -B1 "inet addr:{{ mme_s11_ip }}" | awk '$1!="inet" && $1!="--" {print $1}'
+  args:
+    executable: /bin/bash
+  register: mme_s11_interface
+
+- name: check s1u_network interface
+  shell: ifconfig | grep -B1 "inet addr:{{ enb1_s1u_ip }}" | awk '$1!="inet" && $1!="--" {print $1}'
+  args:
+    executable: /bin/bash
+  register: enb1_s1u_interface
+
+- name: check sgi_network interface
+  shell: ifconfig | grep -B1 "inet addr:{{ appserver_sgi_ip }}" | awk '$1!="inet" && $1!="--" {print $1}'
+  args:
+    executable: /bin/bash
+  register: appserver_sgi_interface
+
 - name: Copy license file
   copy:
     src: "{{ ng4t_license_src }}"
     dest: "{{ ng4t_license_dest }}"
-    owner: root
-    mode: 0644
+
+- name: Create ipconfig file
+  template:
+    src: ./templates/ipconfig.j2
+    dest: "{{ ng4t_ipconfig_dest }}"
+
+- name: Set instance to hosts file
+  shell: "echo 127.0.1.1       $(cat /etc/hostname) >> /etc/hosts"
+
+- name: Start install ng4t
+  sudo: no
+  shell: /home/ng40/install/ng40init
+  args:
+    executable: /bin/bash

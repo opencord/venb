@@ -17,15 +17,23 @@
   gather_facts: False
   connection: ssh
   user: {{ login_user }}
-  # These are still the old variables; update for ng4T emulator
+  sudo: yes
+
   vars:
-    - ts_ip: {{ flat_ip }}
-    - ts_mask: "255.255.255.0"
-    - ts_gateway: "103.0.0.254"
-    - ts_host_name: "{{ instance_name }}"
-    - tas_ip: "{{ tas_ip }}"
-    - ntp_ip: "{{ ntp_ip }}"
     - password: "{{ login_password }}"
+    - enb1_s1u_ip: {{ venb_s1u_ip }}
+    - enb1_s1u_netmask: 24
+    - mme_s11_ip: {{ venb_s11_ip }}
+    - mme_s11_netmask: 24
+    - spgw_s11_ip: {{ vspgwc_s11_ip }}
+    - appserver_sgi_ip: {{ venb_sgi_ip }}
+    - appserver_sgi_gateway: {{ vspgwu_sgi_ip }}
+    - appserver_sgi_netmask: 24
+    - ssh_venb_ip: {{ venb_management_ip }}
+    - ssh_vspgwc_ip: {{ vspgwc_management_ip }}
+    - ssh_vspgwu_ip: {{ vspgwu_management_ip }}
+    - fpc_management_ip: ''
+
   roles:
     - ng4t_config
 
