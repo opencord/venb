@@ -43,12 +43,18 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
 
         fields = {}
-        fields['flat_ip'] = self.get_ip_address('flat_network', o, 'get_venb_flat_ip')
         service = self.get_service(o)
         fields['login_user'] = service.login_user
         fields['login_password'] = service.login_password
-        fields['tas_ip'] = service.tas_ip
-        fields['ntp_ip'] = service.ntp_ip
+        fields['venb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'venb_s1u_ip')
+        fields['venb_s11_ip'] = self.get_ip_address('s11_network', VENBServiceInstance, 'venb_s11_ip')
+        fields['vspgwc_s11_ip'] = self.get_ip_address('s11_network', VSPGWCTenant, 'vspgwc_s11_ip')
+        fields['venb_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, 'venb_sgi_ip')
+        fields['vspgwu_sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'vspgwu_sgi_ip')
+        fields['venb_management_ip'] = self.get_ip_address('management', VENBServiceInstance, 'venb_management_ip')
+        fields['vspgwc_management_ip'] = self.get_ip_address('management', VSPGWCTenant, 'vspgwc_management_ip')
+        fields['vspgwu_management_ip'] = self.get_ip_address('management', VSPGWUTenant, 'vspgwu_management_ip')
+
         return fields
 
     def get_ip_address(self, network_name, service_instance, parameter):

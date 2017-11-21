@@ -13,5 +13,6 @@
 # limitations under the License.
 
 ---
-ng4t_license_src:  /opt/xos/synchronizers/venb/files/ng4t-license.txt
-ng4t_license_dest: /tmp/license.txt
+ng4t_license_src:  /opt/xos/synchronizers/venb/files/ng40-license
+ng4t_license_dest: /home/ng40/install/ng40-license
+ng4t_ipconfig_dest: /home/ng40/install/ipconfig
