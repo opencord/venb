@@ -43,7 +43,7 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
 
         fields = {}
-        fields['flat_ip'] = self.get_ip_address('flat_network', VENBServiceInstance, 'get_venb_flat_ip')
+        fields['flat_ip'] = self.get_ip_address('flat_network', o, 'get_venb_flat_ip')
         service = self.get_service(o)
         fields['login_user'] = service.login_user
         fields['login_password'] = service.login_password
@@ -52,10 +52,9 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
         return fields
 
     def get_ip_address(self, network_name, service_instance, parameter):
-
         try:
             net_id = self.get_network_id(network_name)
-            ins_id = self.get_instance_id(service_instance)
+            ins_id = service_instance.instance_id
             ip_address = Port.objects.get(network_id=net_id, instance_id=ins_id).ip
 
         except Exception:
@@ -68,9 +67,3 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
     # To get each network id
     def get_network_id(self, network_name):
         return Network.objects.get(name=network_name).id
-
-    # To get service_instance (assumption: there is a single instance for each service)
-    def get_instance_id(self, serviceinstance):
-        instances = serviceinstance.objects.all()
-        instance_id = instances[0].instance_id
-        return instance_id
