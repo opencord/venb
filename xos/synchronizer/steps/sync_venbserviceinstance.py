@@ -67,6 +67,7 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
         except Exception:
             ip_address = "error"
             self.log.error("Could not fetch parameter", parameter = parameter, network_name = network_name)
+            self.defer_sync("Waiting for parmaters to become available")
 
         return ip_address
 
