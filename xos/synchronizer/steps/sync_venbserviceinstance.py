@@ -40,35 +40,62 @@ class SyncVENBServiceInstance(SyncInstanceUsingAnsible):
 
         return service[0]
 
+    def get_ip_address_from_peer_service_instance(self, network_name, sitype, o, parameter=None):
+        peer_si = self.get_peer_serviceinstance_of_type(sitype, o)
+        return self.get_ip_address_from_peer_service_instance_instance(network_name, peer_si, o, parameter)
+
+    def get_ip_address_from_peer_service_instance_instance(self, network_name, peer_si, o, parameter=None):
+        try:
+            net_id = self.get_network_id(network_name)
+            ins_id = peer_si.leaf_model.instance_id
+            ip_address = Port.objects.get(
+                network_id=net_id, instance_id=ins_id).ip
+        except Exception:
+            self.log.error("Failed to fetch parameter",
+                           parameter=parameter,
+                           network_name=network_name)
+            self.defer_sync(o, "Waiting for parameters to become available")
+
+        return ip_address
+
+    def get_peer_serviceinstance_of_type(self, sitype, o):
+        prov_link_set = ServiceInstanceLink.objects.filter(
+            subscriber_service_instance_id=o.id)
+
+        try:
+            peer_service = next(
+                p.provider_service_instance for p in prov_link_set if p.provider_service_instance.leaf_model_name == sitype)
+        except StopIteration:
+            sub_link_set = ServiceInstanceLink.objects.filter(
+                provider_service_instance_id=o.id)
+            try:
+                peer_service = next(
+                    s.subscriber_service_instance for s in sub_link_set if s.subscriber_service_instance.leaf_model_name == sitype)
+            except StopIteration:
+                self.log.error(
+                    'Could not find service type in service graph', service_type=sitype, object=o)
+                raise Exception(
+                    "Synchronization failed due to incomplete service graph")
+
+        return peer_service
+
     def get_extra_attributes(self, o):
 
         fields = {}
         service = self.get_service(o)
+
         fields['login_user'] = service.login_user
         fields['login_password'] = service.login_password
-        fields['venb_s1u_ip'] = self.get_ip_address('s1u_network', VENBServiceInstance, 'venb_s1u_ip')
-        fields['venb_s11_ip'] = self.get_ip_address('s11_network', VENBServiceInstance, 'venb_s11_ip')
-        fields['vspgwc_s11_ip'] = self.get_ip_address('s11_network', VSPGWCTenant, 'vspgwc_s11_ip')
-        fields['venb_sgi_ip'] = self.get_ip_address('sgi_network', VENBServiceInstance, 'venb_sgi_ip')
-        fields['vspgwu_sgi_ip'] = self.get_ip_address('sgi_network', VSPGWUTenant, 'vspgwu_sgi_ip')
-        fields['venb_management_ip'] = self.get_ip_address('management', VENBServiceInstance, 'venb_management_ip')
-        fields['vspgwc_management_ip'] = self.get_ip_address('management', VSPGWCTenant, 'vspgwc_management_ip')
-        fields['vspgwu_management_ip'] = self.get_ip_address('management', VSPGWUTenant, 'vspgwu_management_ip')
+        fields['venb_s1u_ip'] = self.get_ip_address_from_peer_service_instance_instance('s1u_network', o, o, 'venb_s1u_ip')
+        fields['venb_s11_ip'] = self.get_ip_address_from_peer_service_instance_instance('s11_network', o, o, 'venb_s11_ip')
+        fields['vspgwc_s11_ip'] = self.get_ip_address_from_peer_service_instance('s11_network', "VSPGWCTenant", o, 'vspgwc_s11_ip')
+        fields['venb_sgi_ip'] = self.get_ip_address_from_peer_service_instance_instance('sgi_network', o, 'venb_sgi_ip')
+        fields['vspgwu_sgi_ip'] = self.get_ip_address_from_peer_service_instance('sgi_network', "VSPGWUTenant", o, 'vspgwu_sgi_ip')
+        fields['venb_management_ip'] = self.get_ip_address_from_peer_service_instance_instance('management', o, 'venb_management_ip')
+        fields['vspgwc_management_ip'] = self.get_ip_address_from_peer_service_instance('management', "VSPGWCTenant", o, 'vspgwc_management_ip')
+        fields['vspgwu_management_ip'] = self.get_ip_address_from_peer_service_instance('management', "VSPGWUTenant", o, 'vspgwu_management_ip')
 
         return fields
-
-    def get_ip_address(self, network_name, service_instance, parameter):
-        try:
-            net_id = self.get_network_id(network_name)
-            ins_id = service_instance.instance_id
-            ip_address = Port.objects.get(network_id=net_id, instance_id=ins_id).ip
-
-        except Exception:
-            ip_address = "error"
-            self.log.error("Could not fetch parameter", parameter = parameter, network_name = network_name)
-            self.defer_sync("Waiting for parmaters to become available")
-
-        return ip_address
 
     # To get each network id
     def get_network_id(self, network_name):
