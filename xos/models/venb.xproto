@@ -1,4 +1,4 @@
-option name = "vENB";
+option name = "venb";
 option app_label = "venb";
 
 message VENBService (Service){
