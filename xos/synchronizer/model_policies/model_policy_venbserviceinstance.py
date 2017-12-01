@@ -19,3 +19,29 @@ from synchronizers.new_base.exceptions import *
 
 class VENBServiceInstancePolicy(TenantWithContainerPolicy):
     model_name = "VENBServiceInstance"
+
+    def handle_create(self, service_instance):
+        return self.handle_update(service_instance)
+
+    def handle_update(self, service_instance):
+        if (service_instance.link_deleted_count>0) and (not service_instance.provided_links.exists()):
+            self.logger.info("The last provided link has been deleted -- self-destructing.")
+            self.handle_delete(service_instance)
+            if VENBServiceInstance.objects.filter(id=service_instance.id).exists():
+                service_instance.delete()
+            else:
+                self.logger.info("Tenant %s is already deleted" % service_instance)
+            return
+
+        self.manage_container(service_instance)
+
+    def handle_delete(self, service_instance):
+        if service_instance.instance and (not service_instance.instance.deleted):
+            all_service_instances_this_instance = VENBServiceInstance.objects.filter(instance_id=service_instance.instance.id)
+            other_service_instances_this_instance = [x for x in all_service_instances_this_instance if x.id != service_instance.id]
+            if (not other_service_instances_this_instance):
+                self.logger.info("VENBServiceInstance Instance %s is now unused -- deleting" % service_instance.instance)
+                service_instance.instance.delete()
+            else:
+                self.logger.info("VENBServiceInstance Instance %s has %d other service instances attached" % (service_instance.instance, len(other_service_instances_this_instance)))
+
