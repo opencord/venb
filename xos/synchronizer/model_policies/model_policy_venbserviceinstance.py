@@ -19,6 +19,7 @@ from synchronizers.new_base.exceptions import *
 
 class VENBServiceInstancePolicy(TenantWithContainerPolicy):
     model_name = "VENBServiceInstance"
+    constrain_by_service_instance = True
 
     def handle_create(self, service_instance):
         return self.handle_update(service_instance)
