@@ -11,4 +11,5 @@ message VENBService (Service){
 
 message VENBServiceInstance (TenantWithContainer){
     option verbose_name = "Virtual eNodeB Service Instance";
+    option owner_class_name="VENBService";
 }
