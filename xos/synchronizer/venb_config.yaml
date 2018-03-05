@@ -14,11 +14,15 @@
 # limitations under the License.
 
 
-name: venb-synchronizer
+name: venb
 accessor:
   username: xosadmin@opencord.org
   password: "@/opt/xos/services/venb/credentials/xosadmin@opencord.org"
+required_models:
+  - VENBService
+  - VENBServiceInstance
 dependency_graph: "/opt/xos/synchronizers/venb/model-deps"
 steps_dir: "/opt/xos/synchronizers/venb/steps"
 sys_dir: "/opt/xos/synchronizers/venb/sys"
 model_policies_dir: "/opt/xos/synchronizers/venb/model_policies"
+models_dir: "/opt/xos/synchronizers/venb/models"
